@@ -38,6 +38,7 @@ import com.example.nutritracker.data.dao.RecipeWithIngredients
 import com.example.nutritracker.data.entity.Intake
 import com.example.nutritracker.data.entity.IntakeType
 import com.example.nutritracker.data.entity.Meal
+import com.example.nutritracker.feature.barcode.BarcodeScannerScreen
 import com.example.nutritracker.feature.camera.AnalysisTask
 import com.example.nutritracker.feature.camera.NutritionResult
 import com.example.nutritracker.feature.camera.TaskStatus
@@ -88,6 +89,9 @@ fun AddMealScreen(
     val analysisSuccess by vm.analysisSuccess.collectAsStateWithLifecycle(initialValue = null)
 
     var showManualAdd by remember { mutableStateOf(false) }
+    var showBarcodeScanner by remember {
+        mutableStateOf(false)
+    }
     var showTextAi by remember { mutableStateOf(false) }
     var reviewingTask by remember { mutableStateOf<AnalysisTask?>(null) }
     var quickLogMealTarget by remember { mutableStateOf<Meal?>(null) }
@@ -95,6 +99,23 @@ fun AddMealScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+
+    if (showBarcodeScanner) {
+        BarcodeScannerScreen(
+            onBarcodeDetected = { code ->
+                showBarcodeScanner = false
+
+                Toast.makeText(
+                    context,
+                    "识别成功：$code",
+                    Toast.LENGTH_LONG
+                ).show()
+            },
+            onClose = {
+                showBarcodeScanner = false
+            }
+        )
+    }
 
     val firstPendingId = pendingConfirmTasks.firstOrNull()?.id
     LaunchedEffect(firstPendingId) {
@@ -180,6 +201,17 @@ fun AddMealScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
+                FilledTonalButton(
+                    onClick = {
+                        showBarcodeScanner = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text("扫描食品条形码")
+                }
+
                 // Three quick log modes
                 Row(
                     modifier = Modifier
