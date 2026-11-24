@@ -75,6 +75,9 @@ android {
 }
 
 dependencies {
+    // Google ML Kit 条形码扫描
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
